@@ -1,6 +1,6 @@
 # reading-metaprogramming-ruby
 
-![](https://github.com/kouryou/reading-metaprogramming-ruby/workflows/Ruby/badge.svg?branch=develop)
+![](https://github.com/kouryou/reading-metaprogramming-ruby/workflows/Ruby/badge.svg?branch=solve)
 
 ようこそ！　メタプログラミングRuby第2版の読書会のためのリポジトリです！
 この読書会の目的は、常に(☝ ՞ਊ ՞)☝のバッジをグリーンに保つことです！
