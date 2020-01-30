@@ -27,13 +27,13 @@ EvilMailbox = Class.new do
     @mail_object.auth(secret_string) if secret_string
   end
 
-  define_method(:send_mail) do |to, body|
+  define_method(:send_mail) do |to, body, &block|
     if secret_string
       @mail_result = @mail_object.send_mail(to, body + secret_string)
     else
       @mail_result = @mail_object.send_mail(to, body)
     end
-    yield(@mail_result) if block_given?
+    block.call(@mail_result) if block
     nil
   end
 
