@@ -22,33 +22,29 @@
 # 4. クラスメソッドsettingは、引数を2つ取り、1つ目がキー名、2つ目が設定する値です
 #     1. settingメソッドに渡された値は、インスタンスメソッド `settings` から返されるオブジェクトに、メソッド名としてアクセスすることで取り出すことができます
 #     2. e.g. クラスメソッドで `setting :name, 'bot'` と実行した場合は、インスタンス内で `settings.name` の戻り値は `bot` の文字列になります
-module ClassMethods
-  def setting(key, value)
-    instance_variable_set(:@key, key)
-    instance_variable_set(:@value, value)
-  end
-
-  def respond(keyword, &block)
-    instance_variable_set(:@ask, keyword) do
-      block.call
-    end
-  end
-end
-
 class SimpleBot
-  extend ClassMethods
+  attr_reader :key, :value
 
-  def ask(arg)
-    respond(arg) if arg == instance_variable_get(:@ask)
-  end
+  def self.respond(keyword, &block)
+    ask = keyword
 
-  def settings
-    clean_room = Object.new
-    clean_room.instance_eval do
-      define_method(instance_variable_get(:@key)) do
-        instance_variable_get(:@value)
+    define_method :ask do |arg|
+      block.call if arg == ask
+    end
+
+    define_singleton_method :settings do
+      clean_room = Object.new
+      clean_room.instance_eval do
+        define_singleton_method "#{key}" do
+          value
+        end
       end
     end
+  end
+
+  def self.setting(key, value)
+    @key = key
+    @value = value
   end
 end
 
