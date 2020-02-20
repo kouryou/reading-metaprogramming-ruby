@@ -121,6 +121,13 @@ end
 class TryOver3::A5Task
   include TryOver3::TaskHelper
 
+  alias task old_task
+
+  def self.task
+    puts "Warning: #{self} is duplicated"
+    old_task
+  end
+
   task :foo do
     "foo"
   end

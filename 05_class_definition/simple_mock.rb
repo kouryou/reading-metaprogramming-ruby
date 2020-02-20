@@ -37,3 +37,33 @@
 # obj.imitated_method
 # obj.called_times(:imitated_method) #=> 2
 # ```
+
+module SimpleMock
+  def expects(method, response)
+    define_singleton_method "#{method}" do
+      if instance_variable_defined?("@#{method}_count")
+        old_count = instance_variable_get("@#{method}_count")
+        instance_variable_set("@#{method}_count", old_count + 1)
+      end
+      response
+    end
+  end
+
+  def watch(watched_method)
+    instance_variable_set("@#{watched_method}_count", 0)
+  end
+
+  def called_times(watched_method)
+    instance_variable_get("@#{watched_method}_count")
+  end
+
+  class << self
+    def new(obj = Object.new)
+      obj.extend SimpleMock
+    end
+
+    def mock(obj)
+      new(obj)
+    end
+  end
+end
