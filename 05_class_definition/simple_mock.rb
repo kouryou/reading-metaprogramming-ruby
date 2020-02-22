@@ -41,16 +41,18 @@
 module SimpleMock
   def expects(method, response)
     define_singleton_method "#{method}" do
-      if instance_variable_defined?("@#{method}_count")
-        old_count = instance_variable_get("@#{method}_count")
-        instance_variable_set("@#{method}_count", old_count + 1)
-      end
       response
     end
   end
 
   def watch(watched_method)
     instance_variable_set("@#{watched_method}_count", 0)
+
+    original_method = method(watched_method)
+    define_singleton_method watched_method do
+      count_up(watched_method)
+      original_method.call
+    end
   end
 
   def called_times(watched_method)
@@ -64,6 +66,15 @@ module SimpleMock
 
     def mock(obj)
       new(obj)
+    end
+  end
+
+  private
+
+  def count_up(method)
+    if instance_variable_defined?("@#{method}_count")
+      old_count = instance_variable_get("@#{method}_count")
+      instance_variable_set("@#{method}_count", old_count + 1)
     end
   end
 end
