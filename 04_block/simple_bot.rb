@@ -23,27 +23,28 @@
 #     1. settingメソッドに渡された値は、インスタンスメソッド `settings` から返されるオブジェクトに、メソッド名としてアクセスすることで取り出すことができます
 #     2. e.g. クラス内で `setting :name, 'bot'` と実行した場合は、respondメソッドに渡されるブロックのスコープ内で `settings.name` の戻り値は `bot` の文字列になります
 class SimpleBot
-  attr_reader :key, :value
-
-  def self.respond(keyword, &block)
-    ask = keyword
-
-    define_method :ask do |arg|
-      block.call if arg == ask
+  class << self
+    def setting(key, value)
+      @values ||= {}
+      @values[key] = value
     end
 
-    define_singleton_method :settings do
-      clean_room = Object.new
-      clean_room.instance_eval do
-        define_singleton_method "#{key}" do
+    def respond(keyword, &block)
+      ask = keyword
+
+      define_method :ask do |arg|
+        block.call if arg == ask
+      end
+    end
+
+    def settings
+      obj = Object.new
+      @values.each do |key, value|
+        obj.define_singleton_method "#{key}" do
           value
         end
       end
+      obj
     end
-  end
-
-  def self.setting(key, value)
-    @key = key
-    @value = value
   end
 end
